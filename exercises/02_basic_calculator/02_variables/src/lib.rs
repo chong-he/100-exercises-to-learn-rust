@@ -8,7 +8,8 @@
 pub fn speed(start: u32, end: u32, time_elapsed: u32) -> u32 {
     // TODO: define a variable named `distance` with the right value to get tests to pass
     //  Do you need to annotate the type of `distance`? Why or why not?
-
+    // Ans: No need to annotate type for distance, because both "end" and "start" have their types, so the compiler can infer
+    let distance = end - start;
     // Don't change the line below
     distance / time_elapsed
 }
