@@ -1,6 +1,12 @@
 mod helpers {
     // TODO: Make this code compile, either by adding a `use` statement or by using
     //  the appropriate path to refer to the `Ticket` struct.
+    use crate::Ticket;
+    // can use cargo modules to view the structure: https://crates.io/crates/cargo-modules
+    // to view: cargo modules structure --package modules
+    // The crate is named "modules" (Check the Cargo.toml file)
+    // Under the crate,it ha a module "helpers" and a struct "Ticket". So helpers and Ticket are in the same level
+    // so to use Ticket in fn create_todo_ticket, which is under module helpers, we need to import the struct Ticket
 
     fn create_todo_ticket(title: String, description: String) -> Ticket {
         Ticket::new(title, description, "To-Do".into())
