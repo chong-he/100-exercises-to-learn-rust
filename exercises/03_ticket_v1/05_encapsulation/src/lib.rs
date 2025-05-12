@@ -34,6 +34,21 @@ pub mod ticket {
         //  - `title` that returns the `title` field.
         //  - `description` that returns the `description` field.
         //  - `status` that returns the `status` field.
+        pub fn title(&self) -> &str {
+            &self.title
+        }
+
+        pub fn description(&self) -> &str {
+            &self.description
+        }
+
+        pub fn status(&self) -> &str {
+            &self.status
+        }
+        // the idea is that we keep the fields of Ticket struct private (so they can't be modified directly)
+        // and if we want to use Ticket struct, we have to go through Ticket::new()
+        // and we implement the constraint (checking) of the fields (e.g., cannot be too long etc) on new
+        // and to modify the values of title, description and status, we do it via: ticket.title()
     }
 }
 
