@@ -13,7 +13,11 @@ mod tests {
 
     #[test]
     fn string_size() {
-        assert_eq!(size_of::<String>(), todo!());
+        // on a 64-bit system, the usize is u64, so it is 8 bytes:
+        // https://doc.rust-lang.org/std/mem/fn.size_of.html
+        // Because it is String type, so it is heap allocated
+        // heap allocation contains: pointer, length, capacity; with 8 bytes each
+        assert_eq!(size_of::<String>(), 24);
     }
 
     #[test]
@@ -23,6 +27,6 @@ mod tests {
         // but, in general, the memory layout of structs is a more complex topic.
         // If you're curious, check out the "Type layout" section of The Rust Reference
         // https://doc.rust-lang.org/reference/type-layout.html for more information.
-        assert_eq!(size_of::<Ticket>(), todo!());
+        assert_eq!(size_of::<Ticket>(), 72);
     }
 }
