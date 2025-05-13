@@ -13,16 +13,21 @@ mod tests {
 
     #[test]
     fn u16_ref_size() {
-        assert_eq!(size_of::<&u16>(), todo!());
+        // pointer is 8 bytes
+        // note that the source mentions: It follows that their size is the same as the size of a pointer, a usize.
+        // 8 bytes = 8*8 bits = 64 bits, so that's the 64 bit that follows the system
+        assert_eq!(size_of::<&u16>(), 8);
     }
 
     #[test]
     fn u64_mut_ref_size() {
-        assert_eq!(size_of::<&mut u64>(), todo!());
+        // whether it is mutable reference or not, a pointer (reference) is 8 bytes
+        assert_eq!(size_of::<&mut u64>(), 8);
     }
 
     #[test]
     fn ticket_ref_size() {
-        assert_eq!(size_of::<&Ticket>(), todo!());
+        // also a reference, so takes a pointer, i.e., 8 bytes
+        assert_eq!(size_of::<&Ticket>(), 8);
     }
 }
