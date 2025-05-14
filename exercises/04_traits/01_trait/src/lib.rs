@@ -33,7 +33,7 @@ mod tests {
 
     #[test]
     fn test_u32_is_even() {
-        assert!(42u64.is_even());
+        assert!(42u32.is_even());
         assert!(!43u32.is_even());
     }
 
