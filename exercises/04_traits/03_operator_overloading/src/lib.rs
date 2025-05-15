@@ -1,5 +1,7 @@
 use std::cmp::PartialEq;
 
+// Alternatively (after going through sec 4.5), we can add the derive macro for PartialEq below
+// #[derive(PartialEq)]
 struct Ticket {
     title: String,
     description: String,
@@ -18,6 +20,12 @@ impl PartialEq for Ticket {
             && self.status == other.status
     }
 }
+// if we have the derive PartialEq above, we only need the following to compare Ticket structs
+// impl Ticket {
+//     fn eq(&self, other: &Self) -> bool {
+//         self == other
+//     }
+// }
 
 #[cfg(test)]
 mod tests {
