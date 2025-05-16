@@ -13,6 +13,44 @@
 // You don't have to though: it's perfectly okay to write three separate
 // implementations manually. Venture further only if you're curious.
 
+trait Power<T> {
+    fn power(self, n: T) -> u32;
+}
+
+impl Power<u32> for u32 {
+    fn power(mut self, n: u32) -> u32 {
+        let base = self;
+        for _ in 1..n {
+            self = self * base;
+        }
+        self
+    }
+}
+
+// when we call the method power, it is 2u32.power(3u16)
+// so the input is a u16, so the type for n has to be u16
+// impl Power<u16> for u32, why "for u32"?
+// because the method being called on a u32 value (2u32), so we implement for u32
+impl Power<u16> for u32 {
+    fn power(mut self, n: u16) -> u32 {
+        let base = self;
+        for _ in 1..n {
+            self = self * base;
+        }
+        self
+    }
+}
+
+impl Power<&u32> for u32 {
+    fn power(mut self, n: &u32) -> u32 {
+        let base = self;
+        for _ in 1..*n {
+            self = self * base;
+        }
+        self
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::Power;
