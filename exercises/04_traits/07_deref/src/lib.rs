@@ -12,11 +12,16 @@ pub struct Ticket {
 
 impl Ticket {
     pub fn title(&self) -> &str {
-        todo!()
+        // self is a String, &self is &String
+        // .trim() is defined on str, not String
+        // becasue String implements Deref trait
+        // String is automatically converted to str when required
+        // so we can call .trim() on String
+        &self.title.trim()
     }
 
     pub fn description(&self) -> &str {
-        todo!()
+        &self.description.trim()
     }
 }
 
