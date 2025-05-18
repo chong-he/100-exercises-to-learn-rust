@@ -3,6 +3,9 @@
 
 use std::ops::Add;
 
+// Refer Chap4Sec11, when we have Copy, we must also always have Clone
+// But the reverse is not true, we can have Clone alone without Copy
+// Copy is a subtrait of Clone
 #[derive(PartialEq, Debug, Clone, Copy)]
 pub struct WrappingU32 {
     value: u32,
@@ -32,6 +35,9 @@ mod tests {
         let x = WrappingU32::new(42);
         let y = WrappingU32::new(31);
         let z = WrappingU32::new(u32::MAX);
+        // because Copy is implemented, we don't have to explicitly do: y.clone()
+        // if we remove the Copy above in the derive, we have to explicitly call y.clone()
+        // With Copy, y is implicitly copied (automatically copied)
         assert_eq!(x + y + y + z, WrappingU32::new(103));
     }
 }
