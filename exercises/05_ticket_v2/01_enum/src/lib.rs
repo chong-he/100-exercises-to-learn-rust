@@ -7,15 +7,24 @@
 struct Ticket {
     title: String,
     description: String,
-    status: String,
+    status: Status,
 }
 
+// The enum also needs to implement Debug, PartialEq, just like the struct Ticket
+// Clone and Copy are required because Status is reused below in the test
+// Ticket no need Clone and Copy because see test below, it is cloning description and ticket (the fields) directly, not the struct
+// the fields itself are String, which implements the Clone trait, so we can clone them
+// Note that the test does not clone Ticket struct, so no need Copy/Clone on Ticket
+#[derive(Debug, PartialEq, Clone, Copy)]
 enum Status {
-    // TODO: add the missing variants
+    ToDo,
+    InProgress,
+    Done,
 }
 
 impl Ticket {
-    pub fn new(title: String, description: String, status: String) -> Ticket {
+    // change the input from "status: String" to "status:Status" (the enum)
+    pub fn new(title: String, description: String, status: Status) -> Ticket {
         if title.is_empty() {
             panic!("Title cannot be empty");
         }
@@ -27,9 +36,6 @@ impl Ticket {
         }
         if description.len() > 500 {
             panic!("Description cannot be longer than 500 bytes");
-        }
-        if status != "To-Do" && status != "In Progress" && status != "Done" {
-            panic!("Only `To-Do`, `In Progress`, and `Done` statuses are allowed");
         }
 
         Ticket {
@@ -47,7 +53,7 @@ impl Ticket {
         &self.description
     }
 
-    pub fn status(&self) -> &String {
+    pub fn status(&self) -> &Status {
         &self.status
     }
 }
