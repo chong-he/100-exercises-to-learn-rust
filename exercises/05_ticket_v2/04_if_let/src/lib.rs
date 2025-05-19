@@ -8,7 +8,17 @@ impl Shape {
     // TODO: Implement the `radius` method using
     //  either an `if let` or a `let/else`.
     pub fn radius(&self) -> f64 {
-        todo!()
+        // the &self in the radius method input is an instance of Shape
+        // if let pattern = expression {}
+        // so the pattern here that we are looking for is "Shape::Circle {radius}"
+        // if a variable has this pattern, we want to return "radius"
+        // the "self" on the RHS of the "if let... = self {" is a Shape
+        // so it checks which variants of the Shape is stored in the self
+        if let Shape::Circle { radius } = self {
+            *radius
+        } else {
+            panic!("Shape is not circle!")
+        }
     }
 }
 
