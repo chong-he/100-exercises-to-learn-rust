@@ -38,7 +38,16 @@ impl Ticket {
         }
     }
     pub fn assigned_to(&self) -> &str {
-        todo!()
+        // self is an instance of Ticket, so we can access status using Ticket.status or self.status
+        // note that when calling ticket.assigned_to(), there is no input required
+        // when we call ticket.assigned_to() (where ticket is a Ticket struct), it will then match the Ticket.status
+        // if the status is InProgress, we return "assigned_to", which will be defined in the Ticket struct
+        match &self.status {
+            Status::InProgress { assigned_to: name } => &name,
+            Status::ToDo | Status::Done => {
+                panic!("Only `In-Progress` tickets can be assigned to someone")
+            }
+        }
     }
 }
 
