@@ -36,7 +36,11 @@ impl Ticket {
         }
     }
     pub fn assigned_to(&self) -> Option<&String> {
-        todo!()
+        match &self.status {
+            // returning an Option, so need to add a "Some"
+            Status::InProgress { assigned_to: name } => Some(&name),
+            _ => None,
+        }
     }
 }
 

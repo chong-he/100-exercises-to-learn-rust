@@ -2,7 +2,43 @@
 //   When the description is invalid, instead, it should use a default description:
 //   "Description not provided".
 fn easy_ticket(title: String, description: String, status: Status) -> Ticket {
-    todo!()
+    // The below also works, but it's lengthy. After looking at the solution, it's simpler
+    // if title.is_empty() {
+    //     panic!("Title cannot be empty")
+    // };
+
+    // if title.len() > 50 {
+    //     panic!("Title cannot be longer than 50 bytes")
+    // };
+
+    // let description_to_use = if description.is_empty() || description.len() > 500 {
+    //     "Description not provided".to_string()
+    // } else {
+    //     description
+    // };
+
+    // Ticket {
+    //     title,
+    //     description: description_to_use,
+    //     status,
+    // }
+    match Ticket::new(title.clone(), description, status.clone()) {
+        // Ok will return Ticket type, this is from the Result<Ticket, String>
+        Ok(ticket) => ticket,
+        // Err is a String, when it errors, it will return the Err() defined in Ticket::new
+        // When the error contains description, we know that it has hit either "if description.is_empty()" or "if description.len() > 500"
+        // (because or else it wouldn't reach the Err variant)
+        // All description related errors contain the word "Description", so if it contains this word,
+        // we return a Ticket with the field description: "Description not provided"
+        // the .unwrap() is used to extract the Ticket type from Result<Ticket, String> in the Ticket::new(...).unwrap()
+        Err(e) => {
+            if e.contains("Description") {
+                Ticket::new(title, "Description not provided".to_string(), status).unwrap()
+            } else {
+                panic!("{}", e)
+            }
+        }
+    }
 }
 
 #[derive(Debug, PartialEq, Clone)]
