@@ -2,7 +2,62 @@
 //   enforcing that the description is not empty and is not longer than 500 bytes.
 //   Implement the traits required to make the tests pass too.
 
+use std::fmt::{self, Display, Formatter};
+
+// because Ticket struct in lib.rs implements Clone (which means all fields in Ticket got Clone)
+// so we need clone for TicketDescription too
+#[derive(PartialEq, Debug, Clone)]
 pub struct TicketDescription(String);
+
+#[derive(Debug)]
+pub struct ParseDescriptionError {
+    invalid_description: String,
+}
+
+impl TryFrom<&str> for TicketDescription {
+    type Error = ParseDescriptionError;
+
+    fn try_from(description: &str) -> Result<Self, Self::Error> {
+        if description.is_empty() {
+            return Err(ParseDescriptionError {
+                invalid_description: description.to_string(),
+            });
+        }
+        if description.len() > 500 {
+            return Err(ParseDescriptionError {
+                invalid_description: description.to_string(),
+            });
+        }
+
+        Ok(TicketDescription(description.to_string()))
+    }
+}
+
+impl TryFrom<String> for TicketDescription {
+    type Error = ParseDescriptionError;
+
+    fn try_from(value: String) -> Result<Self, Self::Error> {
+        // as_str() is to convert String to &str, so that when we call try_into(),
+        // we are calling try_into() on a &str, so Rust goes to TryFrom<&str> impl and executes
+        // without as_str(), it would remains as String, and result in infinite loop because it remains in this very impl
+        value.as_str().try_into()
+    }
+}
+
+// need to implement Display because got .to_string() in the test
+// refer chap5sec12
+// in chap5sec12 for example, we implement Display for TicketNewError, which is an enum with a few variants
+// so we use match self to match for each variant
+// In this impl, the ParseDescriptionError is a struct, so we use the field
+impl Display for ParseDescriptionError {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        if self.invalid_description.is_empty() {
+            write!(f, "The description cannot be empty")
+        } else {
+            write!(f, "The description cannot be longer than 500 bytes")
+        }
+    }
+}
 
 #[cfg(test)]
 mod tests {
