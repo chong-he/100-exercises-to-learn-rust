@@ -15,6 +15,8 @@ pub enum Weekday {
 }
 
 fn weekday_to_index(day: Weekday) -> usize {
+    // for index, we need return usize instead of say, u8
+    // if change to u8 as the return type, will get error
     match day {
         Weekday::Monday => 0,
         Weekday::Tuesday => 1,

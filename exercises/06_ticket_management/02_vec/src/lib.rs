@@ -15,7 +15,16 @@ pub fn fibonacci(n: u32) -> u32 {
     //
     // Hint: use a `Vec` to memoize the results you have already calculated
     // so that you don't have to recalculate them several times.
-    todo!()
+    let mut result: Vec<u32> = vec![0, 1];
+
+    // for index, it has to be usize in Rust, so use/convert n(u32) to usize
+    // once convert to usize, then we can access the index of the vector
+    for i in 2..=n as usize {
+        result.push(result[i - 2] + result[i - 1]);
+    }
+    // the result vector has already been modified/pushed to include the fibonancci sequence, so we can call it
+    println!("result = {:?}", result);
+    result[n as usize]
 }
 
 #[cfg(test)]
