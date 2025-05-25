@@ -29,6 +29,7 @@ impl IntoIterator for TicketStore {
     fn into_iter(self) -> Self::IntoIter {
         // self is TicketStore
         // so, self.tickets is Vec<Ticket>
+        // self.tickets.into_iter() is calling into_iter() on Vec<Ticket>
         self.tickets.into_iter()
     }
 }

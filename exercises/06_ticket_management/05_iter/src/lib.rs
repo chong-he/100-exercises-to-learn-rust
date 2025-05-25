@@ -10,6 +10,19 @@ pub struct TicketStore {
     tickets: Vec<Ticket>,
 }
 
+impl TicketStore {
+    // Look at the Vec::iter() doc:
+    // https://doc.rust-lang.org/std/vec/struct.Vec.html#method.iter
+    // we see: pub fn iter(&self) -> Iter<'_, T>
+    // when click on the Iter, we can see it is in std::slice
+    pub fn iter(&self) -> std::slice::Iter<'_, Ticket> {
+        // The .iter() here refers to Vec::iter(), a method in Vec
+        // It is not TIcketStore::iter()
+        // so self.tickets.iter() calls it on Vec<Ticket>, the Vec here
+        self.tickets.iter()
+    }
+}
+
 #[derive(Debug, Clone, PartialEq)]
 pub struct Ticket {
     title: TicketTitle,
