@@ -37,6 +37,7 @@ impl TicketStore {
     // original code:
     // pub fn add_ticket(&mut self, ticket: impl Into<Ticket>) {}
     // we change the "impl Into<Ticket>" to become generic
+    // similar to Rust book sec 10.2 pg. 7
     pub fn add_ticket<T>(&mut self, ticket: T)
     where
         T: Into<Ticket>,
