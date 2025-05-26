@@ -6,6 +6,17 @@ pub struct TicketStore {
     tickets: Vec<Ticket>,
 }
 
+impl<'a> IntoIterator for &'a TicketStore {
+    // now we only implement for &TicketStore (a reference)
+    type Item = &'a Ticket;
+
+    type IntoIter = std::slice::Iter<'a, Ticket>;
+    fn into_iter(self) -> Self::IntoIter {
+        // we can't use .into_iter() here, because into_iter() takes ownership (c.f. Rustbook sec 13.2)
+        // .iter() is ok because it takes reference, we only borrow it, not own it
+        self.tickets.iter()
+    }
+}
 #[derive(Clone, Debug, PartialEq)]
 pub struct Ticket {
     pub title: TicketTitle,
