@@ -31,6 +31,20 @@ impl TicketStore {
     pub fn add_ticket(&mut self, ticket: Ticket) {
         self.tickets.push(ticket);
     }
+
+    // It says: It must return a `Vec` of references to the tickets
+    // so we output: Vec<&Ticket>
+    pub fn to_dos(&self) -> Vec<&Ticket> {
+        let tickets = self // self = TicketStore
+            .tickets // this access the tickets field under TicketStore struct, so this is a Vec<Ticket>
+            .iter() // Iterate over the Vec<Ticket>
+            // ticket.status, the "ticket" here refers to Ticket struct (what is being iterated)
+            // so ticket.status is accessing the field status in the Ticket struct
+            .filter(|ticket| ticket.status == Status::ToDo)
+            .collect::<Vec<&Ticket>>();
+
+        tickets
+    }
 }
 
 #[cfg(test)]
