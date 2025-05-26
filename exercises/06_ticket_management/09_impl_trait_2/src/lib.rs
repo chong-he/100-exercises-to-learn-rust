@@ -33,7 +33,14 @@ impl TicketStore {
     // that can be infallibly converted into a `Ticket`.
     // This can make it nicer to use the method, as it removes the syntax noise of `.into()`
     // from the calling site. It can worsen the quality of the compiler error messages, though.
-    pub fn add_ticket(&mut self, ticket: impl Into<Ticket>) {
+
+    // original code:
+    // pub fn add_ticket(&mut self, ticket: impl Into<Ticket>) {}
+    // we change the "impl Into<Ticket>" to become generic
+    pub fn add_ticket<T>(&mut self, ticket: T)
+    where
+        T: Into<Ticket>,
+    {
         self.tickets.push(ticket.into());
     }
 }
