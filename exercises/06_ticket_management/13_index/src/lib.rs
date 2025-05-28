@@ -1,11 +1,35 @@
 // TODO: Implement `Index<&TicketId>` and `Index<TicketId>` for `TicketStore`.
 
+use std::ops::Index;
 use ticket_fields::{TicketDescription, TicketTitle};
 
 #[derive(Clone)]
 pub struct TicketStore {
     tickets: Vec<Ticket>,
     counter: u64,
+}
+
+impl Index<&TicketId> for TicketStore {
+    // from the test, we see: let ticket1 = &store[id1]; where id1 is of type TicketId
+    // store[id1] = store.index(id1) after we implement the Index trait
+    // from the get method, we see that it outputs Option<&Ticket>, so we know the output type is Ticket
+    type Output = Ticket;
+
+    fn index(&self, index: &TicketId) -> &Self::Output {
+        self.get(*index).unwrap()
+        // &self[*index] // this is from the solution, it also works, and simpler
+        // *index deferences &TicketId to become TicketId
+        // so: self[*index] = self[TicketId] and this will call the implementation of Index<TicketId> for TicketStore
+        // because self[TicketId] = TicketStore[TIcketId], so it works
+    }
+}
+
+impl Index<TicketId> for TicketStore {
+    type Output = Ticket;
+
+    fn index(&self, index: TicketId) -> &Self::Output {
+        self.get(index).unwrap()
+    }
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]

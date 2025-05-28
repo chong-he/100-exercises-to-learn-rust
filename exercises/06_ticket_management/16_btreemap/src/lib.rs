@@ -3,7 +3,7 @@
 //  references to the tickets, ordered by their `TicketId`.
 //  Implement additional traits on `TicketId` if needed.
 
-use std::collections::BTreeMap;
+use std::collections::{btree_map, BTreeMap};
 use std::ops::{Index, IndexMut};
 use ticket_fields::{TicketDescription, TicketTitle};
 
@@ -13,7 +13,26 @@ pub struct TicketStore {
     counter: u64,
 }
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+// Implement IntoIterator for the &TicketStore struct as required by the exercise
+// refer chap6sec06 for lifetime
+impl<'a> IntoIterator for &'a TicketStore {
+    type Item = &'a Ticket; // immutable reference to Ticket, so &Ticket
+                            // The RHS of the line below is the return type
+                            // we can see the return type by defining a variable a
+                            // btree_map is a module: https://doc.rust-lang.org/std/collections/btree_map/index.html
+    type IntoIter = btree_map::Values<'a, TicketId, Ticket>;
+    fn into_iter(self) -> Self::IntoIter {
+        // A method in BTreeMap to iterate over values only:
+        // https://doc.rust-lang.org/std/collections/btree_map/struct.BTreeMap.html#impl-BTreeMap%3CK,+V,+A%3E-2
+        // Ticket is the value in the BTreeMap, so we iterate over the Ticket
+        let a = self.tickets.values();
+        a
+    }
+}
+
+// Ord is required to be implemented, the get method below will prompt this if don't have Ord
+// Because got Ord, also needs PartialOrd and Eq
+#[derive(Clone, Copy, Debug, PartialEq, Ord, PartialOrd, Eq)]
 pub struct TicketId(u64);
 
 #[derive(Clone, Debug, PartialEq)]
@@ -40,7 +59,7 @@ pub enum Status {
 impl TicketStore {
     pub fn new() -> Self {
         Self {
-            tickets: todo!(),
+            tickets: BTreeMap::new(),
             counter: 0,
         }
     }
@@ -54,16 +73,16 @@ impl TicketStore {
             description: ticket.description,
             status: Status::ToDo,
         };
-        todo!();
+        self.tickets.insert(id, ticket);
         id
     }
 
     pub fn get(&self, id: TicketId) -> Option<&Ticket> {
-        todo!()
+        self.tickets.get(&id)
     }
 
     pub fn get_mut(&mut self, id: TicketId) -> Option<&mut Ticket> {
-        todo!()
+        self.tickets.get_mut(&id)
     }
 }
 

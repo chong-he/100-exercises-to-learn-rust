@@ -11,7 +11,8 @@ pub struct TicketStore {
     counter: u64,
 }
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+// need to add Eq and Hash for TicketId (the key in HashMap)
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub struct TicketId(u64);
 
 #[derive(Clone, Debug, PartialEq)]
@@ -38,7 +39,7 @@ pub enum Status {
 impl TicketStore {
     pub fn new() -> Self {
         Self {
-            tickets: todo!(),
+            tickets: HashMap::new(), //previously was Vec::new(), now that tickets are HashMap, so we create an empty HashMap
             counter: 0,
         }
     }
@@ -52,16 +53,23 @@ impl TicketStore {
             description: ticket.description,
             status: Status::ToDo,
         };
-        todo!();
+        // previously was: self.tickets.push(ticket)
+        // to extend the Vec<Ticket> as new ticket being added
+        // Now that TIcketStore.tickets is a HashMap, so we insert a new key-value pair instead
+        self.tickets.insert(id, ticket);
         id
     }
 
     pub fn get(&self, id: TicketId) -> Option<&Ticket> {
-        todo!()
+        // previously was: self.tickets.iter().find(|&t| t.id == id)
+        // now, we want to return Ticket (value),  when supplying TicketId (key)
+        // this is exactly what .get() does, supply the key, and it will return Option<&Value> (Rustbook Sec8.3)
+        self.tickets.get(&id)
     }
 
     pub fn get_mut(&mut self, id: TicketId) -> Option<&mut Ticket> {
-        todo!()
+        // since it returns mut, so we use get_mut
+        self.tickets.get_mut(&id)
     }
 }
 
