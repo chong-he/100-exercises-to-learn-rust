@@ -6,7 +6,17 @@
 use std::thread;
 
 pub fn sum(v: Vec<i32>) -> i32 {
-    todo!()
+    // Ref: https://doc.rust-lang.org/std/vec/struct.Vec.html#method.leak
+    // From the doc, we see that the output is: pub fn leak<'a>(self) -> &'a mut [T]
+    // i.e., the output is a &[T], in this case, T = i32, so &mut[i32]
+    let slice = v.leak();
+    let mid = slice.len() / 2;
+    let (v1, v2) = slice.split_at(mid);
+
+    let thread1 = thread::spawn(move || v1.iter().sum::<i32>());
+    let thread2 = thread::spawn(move || v2.iter().sum::<i32>());
+
+    thread1.join().unwrap() + thread2.join().unwrap()
 }
 
 #[cfg(test)]

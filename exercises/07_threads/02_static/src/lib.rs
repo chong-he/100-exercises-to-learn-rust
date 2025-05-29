@@ -4,7 +4,17 @@
 use std::thread;
 
 pub fn sum(slice: &'static [i32]) -> i32 {
-    todo!()
+    let half_point = slice.len() / 2;
+    let (v1, v2) = slice.split_at(half_point);
+    // note: no need to convert to vec, so no allocation of new memory
+    // since the input has 'static, so v1 and v2 also have 'static lifetime
+    //let v1 = v1.to_vec();
+    //let v2 = v2.to_vec();
+
+    let thread1 = thread::spawn(move || v1.iter().sum::<i32>());
+    let thread2 = thread::spawn(move || v2.iter().sum::<i32>());
+
+    thread1.join().unwrap() + thread2.join().unwrap()
 }
 
 #[cfg(test)]
