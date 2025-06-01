@@ -6,18 +6,22 @@ use std::rc::Rc;
 
 pub struct DropTracker<T> {
     value: T,
-    counter: todo!(),
+    // Rc allows shared references (immutable references), i.e., multiple owners of some data
+    // RefCell allows interior mutability, Rustbook sec 15.5
+    // So with Rc<RefCell>, we get shared ownership + interior mutability
+    counter: Rc<RefCell<usize>>,
 }
 
 impl<T> DropTracker<T> {
-    pub fn new(value: T, counter: todo!()) -> Self {
+    pub fn new(value: T, counter: Rc<RefCell<usize>>) -> Self {
         Self { value, counter }
     }
 }
 
 impl<T> Drop for DropTracker<T> {
     fn drop(&mut self) {
-        todo!()
+        // Rustbook sec 15.5 pg. 10, also got this function
+        *self.counter.borrow_mut() += 1;
     }
 }
 
