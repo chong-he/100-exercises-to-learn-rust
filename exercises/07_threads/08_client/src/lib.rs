@@ -1,29 +1,60 @@
 use crate::data::{Ticket, TicketDraft};
 use crate::store::{TicketId, TicketStore};
-use std::sync::mpsc::{Receiver, Sender};
+use std::sync::mpsc::{self, Receiver, Sender};
 
 pub mod data;
 pub mod store;
 
 #[derive(Clone)]
 // TODO: flesh out the client implementation.
-pub struct TicketStoreClient {}
+pub struct TicketStoreClient {
+    // the type Sender<Command> is from the launch function
+    sender: Sender<Command>,
+}
 
 impl TicketStoreClient {
     // Feel free to panic on all errors, for simplicity.
     pub fn insert(&self, draft: TicketDraft) -> TicketId {
-        todo!()
+        // this channel is different from the channel in get function, as we can see from the type difference
+        // this channel closes off after the receiver (end of function) receive the data
+        // compared to the launch function: let (sender, receiver) = std::sync::mpsc::channel();
+        // The launch function is a persistent channel
+        let (response_sender, response_receiver) = mpsc::channel();
+
+        let command = Command::Insert {
+            draft,
+            response_channel: response_sender,
+        };
+
+        // send the command to the server, we send Command::Insert to the server
+        // this command is sent via the channel in the launch function, because we see: self.sender.send()
+        // the sender here is the sender in the launch function
+        self.sender.send(command).unwrap();
+        // receive the result from the server
+        // The client receives a TicketId from the server
+        response_receiver.recv().unwrap()
     }
 
     pub fn get(&self, id: TicketId) -> Option<Ticket> {
-        todo!()
+        let (response_sender, response_receiver) = mpsc::channel();
+
+        let command = Command::Get {
+            id,
+            response_channel: response_sender,
+        };
+
+        self.sender.send(command).unwrap();
+        // receives Option<Ticket> from the server
+        response_receiver.recv().unwrap()
     }
 }
 
 pub fn launch() -> TicketStoreClient {
     let (sender, receiver) = std::sync::mpsc::channel();
+    // starts the server in a new thread
     std::thread::spawn(move || server(receiver));
-    todo!()
+    // returns a client
+    TicketStoreClient { sender }
 }
 
 // No longer public! This becomes an internal detail of the library now.
