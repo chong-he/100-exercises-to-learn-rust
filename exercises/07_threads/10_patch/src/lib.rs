@@ -35,7 +35,17 @@ impl TicketStoreClient {
         Ok(response_receiver.recv().unwrap())
     }
 
-    pub fn update(&self, ticket_patch: TicketPatch) -> Result<(), OverloadedError> {}
+    pub fn update(&self, ticket_patch: TicketPatch) -> Result<(), OverloadedError> {
+        // Same logic as other functions like insert and get
+        let (response_sender, response_receiver) = sync_channel(1);
+        self.sender
+            .try_send(Command::Update {
+                patch: ticket_patch,
+                response_channel: response_sender,
+            })
+            .map_err(|_| OverloadedError)?;
+        Ok(response_receiver.recv().unwrap())
+    }
 }
 
 #[derive(Debug, thiserror::Error)]
@@ -85,7 +95,30 @@ pub fn server(receiver: Receiver<Command>) {
                 patch,
                 response_channel,
             }) => {
-                todo!()
+                // here, we want to update the fields
+                // get_mut returns a &mut Ticket type
+                // the whole thing inside the "if let" only runs if the ticket exists
+                if let Some(ticket) = store.get_mut(patch.id) {
+                    // if the ticket exists, we modify the ticket's fields
+                    // patch is a TicketPatch, sent by the client
+                    // patch.title is of type Option<TicketTitle>, it can be Some(title) or None
+                    // the "ticket.title = title" only runs if patch.title is Some(value)
+                    // Some(title) is the pattern, patch.title is the expression
+                    // So the pattern we are trying to match against is: Some(title)
+                    // patch.title returns Option<TicketTitle>
+                    // Some(title) = Some(TicketTitle) = Option<TicketTitle>, so it matches
+                    if let Some(title) = patch.title {
+                        // modify the ticket title if it matches
+                        ticket.title = title;
+                    }
+                    if let Some(description) = patch.description {
+                        ticket.description = description;
+                    }
+                    if let Some(status) = patch.status {
+                        ticket.status = status;
+                    }
+                }
+                let _ = response_channel.send(());
             }
             Err(_) => {
                 // There are no more senders, so we can safely break
