@@ -23,6 +23,8 @@ pub async fn echo(listener: TcpListener) -> Result<(), anyhow::Error> {
         // .accept() blocks until a client connects, it is waiting for a client
         let (mut stream, address) = listener.accept().await?;
 
+        // tokio::spawn is to create async task (not thread)
+        // the task can run alongside other tasks
         tokio::spawn(async move {
             // .split() returns 2 outputs, read and write
             // TCP connections are bidirectional (can read and write)
