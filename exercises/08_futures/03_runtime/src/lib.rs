@@ -5,12 +5,44 @@ use std::fmt::Display;
 use tokio::io::AsyncWriteExt;
 use tokio::net::TcpListener;
 
+use std::sync::Arc;
+
 pub async fn fixed_reply<T>(first: TcpListener, second: TcpListener, reply: T)
 where
     // `T` cannot be cloned. How do you share it between the two server tasks?
     T: Display + Send + Sync + 'static,
 {
-    todo!()
+    // because we want to send between threads, so we wrap T in Arc
+    let reply = Arc::new(reply);
+    let reply_clone = reply.clone();
+
+    // This spawns two concurrent/parallel tasks, one task handles one listener
+    // so we got 2 servers listening
+    // recall that TcpListener is the server, listening for incoming connection, so first and second are the server (TcpListener)
+    let listener_one = tokio::spawn(server(first, reply));
+    let listener_two = tokio::spawn(server(second, reply_clone));
+
+    let _ = tokio::join!(listener_one, listener_two);
+}
+
+async fn server<T>(listener: TcpListener, reply: Arc<T>) -> Result<(), anyhow::Error>
+where
+    T: Display + Send + Sync + 'static,
+{
+    loop {
+        let (mut stream, _address) = listener.accept().await?;
+
+        let (_reader, mut writer) = stream.split();
+
+        // this addresses : and always reply to clients by sending the `Display` representation of the `reply` argument as a response.
+        // In this case, the .write_all() is used on the server (as opposed to previous sec01/02 where is used on the client)
+        // so in this case, when the server calls .write_all(), it sends data to the client
+        // it uses the reply as an input
+        writer
+            .write_all(reply.to_string().as_bytes())
+            .await
+            .unwrap();
+    }
 }
 
 #[cfg(test)]
