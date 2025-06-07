@@ -37,7 +37,14 @@ mod tests {
 
             // Send first half
             writer.write_all(beginning.as_bytes()).await.unwrap();
+            // here, it sleeps for 2x longer of the timeout (40ms)
             tokio::time::sleep(timeout * 2).await;
+            // hence, this can't be sent, due to longer than timeout
+            // the server timeout after 20ms:
+            // from this line: let _ = tokio::time::timeout(timeout, async {
+            // we can easily verify, if delete this line:
+            //         let _ = tokio::time::timeout(timeout, async {
+            // then the message all gets sent
             writer.write_all(end.as_bytes()).await.unwrap();
 
             // Close the write side of the socket
