@@ -10,7 +10,17 @@ fn spawner() {
 }
 
 async fn example() {
-    let non_send = Rc::new(1);
+    // the idea is Rc cannot be created before an await
+    // so if we have await first, then Rc, then is fine
     yield_now().await;
+    let non_send = Rc::new(1);
+
     println!("{}", non_send);
+
+    // another one that works:
+    // {
+    //    let non_send = Rc::new(1);
+    //    println!("{}", non_send);
+    // }  <- non_send is dropped here since Rc is dropped after {}, so we can call await after it has been dropped
+    // yield_now().await;
 }
