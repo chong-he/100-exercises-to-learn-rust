@@ -5,14 +5,22 @@
 use std::io::{Read, Write};
 use tokio::net::TcpListener;
 
+use tokio::task;
+
 pub async fn echo(listener: TcpListener) -> Result<(), anyhow::Error> {
     loop {
+        // listen on client incoming connection
         let (socket, _) = listener.accept().await?;
         let mut socket = socket.into_std()?;
-        socket.set_nonblocking(false)?;
-        let mut buffer = Vec::new();
-        socket.read_to_end(&mut buffer)?;
-        socket.write_all(&buffer)?;
+
+        // specify the return type of the closure (to match the return type of the function)
+        task::spawn_blocking(move || -> Result<(), anyhow::Error> {
+            socket.set_nonblocking(false)?;
+            let mut buffer = Vec::new();
+            socket.read_to_end(&mut buffer)?;
+            socket.write_all(&buffer)?;
+            Ok(())
+        });
     }
 }
 
